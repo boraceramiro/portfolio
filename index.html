@@ -342,7 +342,7 @@
       let lastRenderTime = 0;
 
       function updateFavicon(time) {
-        if (time - lastFaviconUpdateTime < 125 && lastFaviconUpdateTime !== 0) return;
+        if (time - lastFaviconUpdateTime < 40 && lastFaviconUpdateTime !== 0) return;
         faviconLink.type = "image/png";
         faviconLink.href = brandRenderer.domElement.toDataURL("image/png");
         lastFaviconUpdateTime = time;
@@ -351,7 +351,7 @@
       function renderBrandLogo(time) {
         brandAnimationFrame = 0;
         if (!brandModel) return;
-        const frameInterval = brandControl.classList.contains("oculto") ? 1000 / 8 : 1000 / 30;
+        const frameInterval = brandControl.classList.contains("oculto") ? 1000 / 20 : 1000 / 30;
         if (time - lastBrandRenderTime >= frameInterval || lastBrandRenderTime === 0) {
           if (!reduceBrandMotion && lastBrandFrameTime) {
             brandAngle += (time - lastBrandFrameTime) * 0.003;
@@ -368,7 +368,7 @@
       }
 
       function startBrandAnimation() {
-        if (!brandModel || brandControl.classList.contains("oculto")) return;
+        if (!brandModel) return;
         if (reduceBrandMotion) {
           brandModel.rotation.y = brandAngle;
           brandRenderer.render(brandScene, brandCamera);
@@ -401,10 +401,10 @@
           model.position.sub(center);
           brandModel = model;
           brandScene.add(brandModel);
-          const frameSize = Math.max(size.x, size.y);
+          const frameSize = Math.max(size.y, Math.hypot(size.x, size.z));
           const distance = frameSize /
-            (2 * Math.tan(THREE.MathUtils.degToRad(brandCamera.fov / 2))) * 0.84;
-          brandCamera.position.set(0, 0, distance + size.z / 2);
+            (2 * Math.tan(THREE.MathUtils.degToRad(brandCamera.fov / 2))) * 1.12;
+          brandCamera.position.set(0, 0, distance);
           brandCamera.lookAt(0, 0, 0);
           startBrandAnimation();
         },
