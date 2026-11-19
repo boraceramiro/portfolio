@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ramiro Borace | Portfolio</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -339,7 +340,7 @@
         if (!brandModel || brandControl.classList.contains("oculto")) return;
         if (time - lastBrandRenderTime >= 1000 / 30 || lastBrandRenderTime === 0) {
           if (!reduceBrandMotion && lastBrandFrameTime) {
-            brandAngle += (time - lastBrandFrameTime) * 0.0002;
+            brandAngle += (time - lastBrandFrameTime) * 0.0006;
           }
           brandModel.rotation.y = brandAngle;
           brandRenderer.render(brandScene, brandCamera);
