@@ -9,8 +9,20 @@
       <stop offset="1" stop-color="#657287"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="12" fill="#10131b"/>
-  <text x="32" y="47" fill="url(#chrome)" stroke="#d8e0ea" stroke-width="0.4"
+  <style>
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .spin {
+      animation: spin 2.1s linear infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .spin { animation: none; }
+    }
+  </style>
+  <text class="spin" x="32" y="47" fill="url(#chrome)" stroke="#d8e0ea" stroke-width="0.4"
     font-family="Arial Black, Impact, sans-serif" font-size="39" font-weight="900"
     letter-spacing="-2" text-anchor="middle">23</text>
 </svg>

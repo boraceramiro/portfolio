@@ -292,9 +292,14 @@
       container.appendChild(renderer.domElement);
 
       const brandControl = document.querySelector("#brand-control");
+      const faviconLink = document.querySelector('link[rel="icon"]');
       const brandScene = new THREE.Scene();
       const brandCamera = new THREE.PerspectiveCamera(35, 1, 0.01, 100);
-      const brandRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      const brandRenderer = new THREE.WebGLRenderer({
+        alpha: true,
+        antialias: true,
+        preserveDrawingBuffer: true
+      });
       brandRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       brandRenderer.setSize(42, 42, false);
       brandRenderer.setClearColor(0x000000, 0);
@@ -325,6 +330,7 @@
       let brandAnimationFrame = 0;
       let lastBrandFrameTime = 0;
       let lastBrandRenderTime = 0;
+      let lastFaviconUpdateTime = 0;
       let brandAngle = 1.45;
       const reduceBrandMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       let zoomProgress = 0;
@@ -335,15 +341,24 @@
       let heroVisible = true;
       let lastRenderTime = 0;
 
+      function updateFavicon(time) {
+        if (time - lastFaviconUpdateTime < 125 && lastFaviconUpdateTime !== 0) return;
+        faviconLink.type = "image/png";
+        faviconLink.href = brandRenderer.domElement.toDataURL("image/png");
+        lastFaviconUpdateTime = time;
+      }
+
       function renderBrandLogo(time) {
         brandAnimationFrame = 0;
-        if (!brandModel || brandControl.classList.contains("oculto")) return;
-        if (time - lastBrandRenderTime >= 1000 / 30 || lastBrandRenderTime === 0) {
+        if (!brandModel) return;
+        const frameInterval = brandControl.classList.contains("oculto") ? 1000 / 8 : 1000 / 30;
+        if (time - lastBrandRenderTime >= frameInterval || lastBrandRenderTime === 0) {
           if (!reduceBrandMotion && lastBrandFrameTime) {
-            brandAngle += (time - lastBrandFrameTime) * 0.0006;
+            brandAngle += (time - lastBrandFrameTime) * 0.003;
           }
           brandModel.rotation.y = brandAngle;
           brandRenderer.render(brandScene, brandCamera);
+          updateFavicon(time);
           lastBrandFrameTime = time;
           lastBrandRenderTime = time;
         }
@@ -357,6 +372,7 @@
         if (reduceBrandMotion) {
           brandModel.rotation.y = brandAngle;
           brandRenderer.render(brandScene, brandCamera);
+          updateFavicon(performance.now());
           return;
         }
         if (brandAnimationFrame) return;
@@ -367,14 +383,7 @@
       }
 
       function updateBrandVisibility() {
-        if (brandControl.classList.contains("oculto")) {
-          cancelAnimationFrame(brandAnimationFrame);
-          brandAnimationFrame = 0;
-          lastBrandFrameTime = 0;
-          lastBrandRenderTime = 0;
-        } else {
-          startBrandAnimation();
-        }
+        startBrandAnimation();
       }
 
       const brandVisibilityObserver = new MutationObserver(updateBrandVisibility);
