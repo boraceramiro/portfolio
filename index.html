@@ -4,20 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ramiro Borace | Portfolio</title>
-    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=monogram23-transparent">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="preload" href="assets/models/ramiro.glb" as="fetch" crossorigin="anonymous">
     <script id="model-viewer-library" type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=index-paper-aligned-v66">
+    <link rel="stylesheet" href="style.css?v=index-paper-aligned-v83">
   </head>
   <body>
     <header id="bar" class="site-header">
-      <button id="burger" type="button" aria-label="Abrir navegación" aria-expanded="false" aria-controls="menu">
-        <span id="actual">Inicio</span>
-        <span class="burger-icon" aria-hidden="true"></span>
-      </button>
       <nav id="menu" class="site-menu" aria-label="Navegación principal" hidden>
         <a href="#top">Inicio</a>
         <a href="#sobre-mi">Sobre mí</a>
@@ -51,6 +47,11 @@
         </div>
       </nav>
     </header>
+    <button id="burger" type="button" aria-label="Abrir navegación" aria-expanded="false" aria-controls="menu">
+      <span id="actual">Inicio</span>
+      <span class="burger-icon" aria-hidden="true"></span>
+    </button>
+    <a class="site-monogram" href="#top" aria-label="Ir al inicio">23</a>
     <div id="progreso" class="scroll-progress" aria-hidden="true"></div>
     <div id="zoom" class="zoom-sequence">
       <section id="top" class="hero" aria-label="Inicio">
@@ -59,7 +60,7 @@
             <div class="hero-kicker">
               <span>Ramiro Borace</span>
             </div>
-            <h1 class="hero-wordmark">Portfolio</h1>
+            <h1 class="hero-wordmark" aria-label="Portfolio">Portf<span class="hero-notion" aria-hidden="true"><img class="hero-notion-open" src="assets/hero/yo-notion-open.png" alt=""><img class="hero-notion-blink" src="assets/hero/yo-notion-blink.png" alt=""></span>lio</h1>
           </div>
         </div>
       </section>
@@ -197,14 +198,14 @@
                   disable-pan
                   disable-tap
                   interaction-prompt="none"
-                  camera-orbit="180deg 75deg 4.2m"
+                  camera-orbit="0deg 90deg 4.2m"
                   camera-target="0m -0.05m 0m"
                   field-of-view="30deg"
                   shadow-intensity="0.8"
                   exposure="1.1"
                   auto-rotate
                   auto-rotate-delay="0"
-                  rotation-per-second="-22.5deg">
+                  rotation-per-second="-8deg">
                 </model-viewer>
                 <div class="model-flash" aria-hidden="true"></div>
               </div>

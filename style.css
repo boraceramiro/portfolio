@@ -25,6 +25,7 @@
   --paper: #f5f4f0;
   --muted: #9da8ec;
   --margin: clamp(20px, 4vw, 48px);
+  --paper-grid-step: 42px;
   --paper-background-image:
     url("assets/paper-texture.svg"),
     radial-gradient(ellipse at 14% 20%, rgb(95 85 67 / 8%), transparent 31%),
@@ -34,7 +35,7 @@
     linear-gradient(90deg, rgb(20 20 20 / 7%) 1px, transparent 1px),
     radial-gradient(ellipse at 22% 16%, rgb(255 255 255 / 70%), transparent 58%),
     repeating-linear-gradient(115deg, rgb(30 30 30 / 1.5%) 0 1px, transparent 1px 5px);
-  --paper-background-size: 420px 420px, 100% 100%, 100% 100%, 100% 100%, 42px 42px, 42px 42px, 100% 100%, 9px 9px;
+  --paper-background-size: 420px 420px, 100% 100%, 100% 100%, 100% 100%, var(--paper-grid-step) var(--paper-grid-step), var(--paper-grid-step) var(--paper-grid-step), 100% 100%, 9px 9px;
   color: #111;
   background: var(--paper);
   font-family: "Obviously Wide Medium", Arial, sans-serif;
@@ -117,14 +118,37 @@ button {
 }
 
 .site-header {
+  height: 0;
+}
+
+.site-monogram {
   position: fixed;
   z-index: 42;
   top: max(env(safe-area-inset-top), 16px);
-  right: var(--margin);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: #111;
+  left: var(--margin);
+  display: grid;
+  width: 62px;
+  height: 38px;
+  place-items: center;
+  background: transparent;
+  color: #fff;
+  font-family: "Obviously Wide Bold", "Obviously Wide Medium", Arial, sans-serif;
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: -.08em;
+  line-height: 1;
+  mix-blend-mode: difference;
+  text-decoration: none;
+  transition: opacity 160ms ease;
+}
+
+.site-monogram:hover {
+  opacity: .76;
+}
+
+.site-monogram:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
 }
 
 #actual {
@@ -143,7 +167,10 @@ button {
 }
 
 #burger {
-  position: relative;
+  position: fixed;
+  z-index: 43;
+  top: max(env(safe-area-inset-top), 16px);
+  right: var(--margin);
   display: inline-flex;
   width: 130px;
   min-width: 130px;
@@ -152,16 +179,17 @@ button {
   justify-content: space-between;
   gap: 12px;
   padding: 0 10px;
-  border: 1px solid rgb(17 17 17 / 62%);
+  border: 1px solid #fff;
   border-radius: 0;
-  background-color: var(--paper);
-  color: #111;
+  background: transparent;
+  color: #fff;
   cursor: pointer;
+  mix-blend-mode: difference;
   transition: background-color 160ms ease, color 160ms ease;
 }
 
 #burger:hover {
-  background-color: var(--paper);
+  background-color: transparent;
 }
 
 #burger::before,
@@ -197,43 +225,38 @@ button {
   outline-offset: 3px;
 }
 
-.site-header.abierto #burger::before {
+#bar.abierto + #burger::before {
   transform: translateY(0) rotate(45deg);
 }
 
-.site-header.abierto #burger::after {
+#bar.abierto + #burger::after {
   transform: translateY(0) rotate(-45deg);
 }
 
-.site-header.abierto #burger .burger-icon {
+#bar.abierto + #burger .burger-icon {
   transform: scaleX(0);
 }
 
 .site-menu {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
+  position: fixed;
+  z-index: 42;
+  top: calc(max(env(safe-area-inset-top), 16px) + 48px);
+  right: var(--margin);
   display: grid;
   width: min(230px, calc(100vw - 2 * var(--margin)));
   gap: 0;
   padding: 16px 18px 12px;
-  border: 1px solid rgb(17 17 17 / 42%);
+  border: 1px solid #fff;
   border-radius: 0;
-  background-color: var(--paper);
+  background: transparent;
+  color: #fff;
+  mix-blend-mode: difference;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transition:
     opacity 180ms ease,
     visibility 0s linear 180ms;
-}
-
-#burger,
-.site-menu {
-  background-color: var(--paper);
-  background-image: var(--paper-background-image);
-  background-size: var(--paper-background-size);
-  background-attachment: fixed;
 }
 
 .site-menu.visible {
@@ -252,7 +275,7 @@ button {
 .site-menu > a {
   display: block;
   padding: 10px 0;
-  color: #111;
+  color: currentColor;
   font-family: "Obviously Wide Bold", "Obviously Wide Medium", Arial, sans-serif;
   font-size: 19px;
   font-weight: 800;
@@ -281,12 +304,12 @@ button {
   place-items: center;
   width: 40px;
   height: 40px;
-  color: var(--ink);
+  color: currentColor;
   transition: color 160ms ease, transform 160ms ease;
 }
 
 .site-menu .menu-socials a:hover {
-  color: #111;
+  color: currentColor;
   transform: translateY(-2px);
 }
 
@@ -381,6 +404,57 @@ button {
   text-align: left;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+.hero-notion {
+  position: relative;
+  display: inline-block;
+  width: min(1em, calc(var(--paper-grid-step) * 4));
+  height: min(1em, calc(var(--paper-grid-step) * 4));
+  margin-inline: .015em;
+  vertical-align: -.04em;
+}
+
+.hero-notion img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  transform: translate(
+    min(calc(var(--paper-grid-step) * .1875), .04em),
+    min(calc(var(--paper-grid-step) * .375), .08em)
+  ) scale(1.1);
+}
+
+.hero-notion-open {
+  animation: hero-notion-open 6s steps(1, end) infinite;
+}
+
+.hero-notion-blink {
+  opacity: 0;
+  animation: hero-notion-blink 6s steps(1, end) infinite;
+}
+
+@keyframes hero-notion-open {
+  0%, 88%, 90%, 93%, 100% {
+    opacity: 1;
+  }
+
+  89%, 91% {
+    opacity: 0;
+  }
+}
+
+@keyframes hero-notion-blink {
+  0%, 88%, 90%, 93%, 100% {
+    opacity: 0;
+  }
+
+  89%, 91% {
+    opacity: 1;
+  }
 }
 
 .sec {
@@ -1101,13 +1175,21 @@ button {
 }
 
 @media (max-width: 720px) {
-  .site-header {
+  #burger {
     top: max(env(safe-area-inset-top), 12px);
     right: 14px;
   }
 
+  .site-monogram {
+    top: max(env(safe-area-inset-top), 12px);
+    left: 14px;
+    font-size: 32px;
+  }
+
   .site-menu {
     min-width: 205px;
+    top: calc(max(env(safe-area-inset-top), 12px) + 48px);
+    right: 14px;
   }
 
   .hero-lockup {
@@ -1117,6 +1199,11 @@ button {
   .hero-wordmark {
     font-size: clamp(2.6rem, 13vw, 5.2rem);
     letter-spacing: -.06em;
+  }
+
+  .hero-notion {
+    width: .86em;
+    height: .86em;
   }
 
   .hero-kicker {
@@ -1252,6 +1339,16 @@ button {
 @media (prefers-reduced-motion: reduce) {
   :root {
     scroll-behavior: auto;
+  }
+
+  .hero-notion-blink {
+    animation: none;
+    opacity: 0;
+  }
+
+  .hero-notion-open {
+    animation: none;
+    opacity: 1;
   }
 
   .project-scene {
