@@ -10,12 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="preload" href="assets/models/ramiro.glb" as="fetch" crossorigin="anonymous">
     <script id="model-viewer-library" type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=section-typography-v59">
+    <link rel="stylesheet" href="style.css?v=index-paper-aligned-v66">
   </head>
   <body>
     <header id="bar" class="site-header">
-      <span id="actual">Inicio</span>
-      <button id="burger" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu">
+      <button id="burger" type="button" aria-label="Abrir navegación" aria-expanded="false" aria-controls="menu">
+        <span id="actual">Inicio</span>
         <span class="burger-icon" aria-hidden="true"></span>
       </button>
       <nav id="menu" class="site-menu" aria-label="Navegación principal" hidden>
@@ -431,7 +431,7 @@
           }, reduceMotion ? 0 : 200);
         }
         burger.setAttribute("aria-expanded", String(open));
-        burger.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+        burger.setAttribute("aria-label", open ? "Cerrar navegación" : "Abrir navegación");
         bar.classList.toggle("abierto", open);
       }
 

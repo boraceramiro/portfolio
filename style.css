@@ -25,6 +25,16 @@
   --paper: #f5f4f0;
   --muted: #9da8ec;
   --margin: clamp(20px, 4vw, 48px);
+  --paper-background-image:
+    url("assets/paper-texture.svg"),
+    radial-gradient(ellipse at 14% 20%, rgb(95 85 67 / 8%), transparent 31%),
+    radial-gradient(ellipse at 78% 72%, rgb(95 85 67 / 7%), transparent 34%),
+    linear-gradient(132deg, transparent 28%, rgb(95 85 67 / 3%) 30%, transparent 34%, transparent 62%, rgb(255 255 255 / 32%) 65%, transparent 69%),
+    linear-gradient(rgb(20 20 20 / 7%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(20 20 20 / 7%) 1px, transparent 1px),
+    radial-gradient(ellipse at 22% 16%, rgb(255 255 255 / 70%), transparent 58%),
+    repeating-linear-gradient(115deg, rgb(30 30 30 / 1.5%) 0 1px, transparent 1px 5px);
+  --paper-background-size: 420px 420px, 100% 100%, 100% 100%, 100% 100%, 42px 42px, 42px 42px, 100% 100%, 9px 9px;
   color: #111;
   background: var(--paper);
   font-family: "Obviously Wide Medium", Arial, sans-serif;
@@ -58,16 +68,8 @@ body::before {
   z-index: -1;
   inset: 0;
   background-color: var(--paper);
-  background-image:
-    url("assets/paper-texture.svg"),
-    radial-gradient(ellipse at 14% 20%, rgb(95 85 67 / 8%), transparent 31%),
-    radial-gradient(ellipse at 78% 72%, rgb(95 85 67 / 7%), transparent 34%),
-    linear-gradient(132deg, transparent 28%, rgb(95 85 67 / 3%) 30%, transparent 34%, transparent 62%, rgb(255 255 255 / 32%) 65%, transparent 69%),
-    linear-gradient(rgb(20 20 20 / 7%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(20 20 20 / 7%) 1px, transparent 1px),
-    radial-gradient(ellipse at 22% 16%, rgb(255 255 255 / 70%), transparent 58%),
-    repeating-linear-gradient(115deg, rgb(30 30 30 / 1.5%) 0 1px, transparent 1px 5px);
-  background-size: 420px 420px, 100% 100%, 100% 100%, 100% 100%, 42px 42px, 42px 42px, 100% 100%, 9px 9px;
+  background-image: var(--paper-background-image);
+  background-size: var(--paper-background-size);
   content: "";
   pointer-events: none;
 }
@@ -131,6 +133,7 @@ button {
   font-weight: 400;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+  white-space: nowrap;
   transition: opacity 140ms ease, transform 140ms ease;
 }
 
@@ -141,25 +144,33 @@ button {
 
 #burger {
   position: relative;
-  display: grid;
-  width: 44px;
-  height: 44px;
-  place-items: center;
-  padding: 0;
-  border: 0;
+  display: inline-flex;
+  width: 130px;
+  min-width: 130px;
+  height: 38px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 10px;
+  border: 1px solid rgb(17 17 17 / 62%);
   border-radius: 0;
-  background: var(--ink);
-  color: white;
+  background-color: var(--paper);
+  color: #111;
   cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+#burger:hover {
+  background-color: var(--paper);
 }
 
 #burger::before,
 #burger::after,
 #burger .burger-icon {
   position: absolute;
-  right: 12px;
+  right: 10px;
   width: 17px;
-  height: 2px;
+  height: 1px;
   border-radius: 0;
   background: currentColor;
   content: "";
@@ -181,6 +192,11 @@ button {
   transform: translateY(-50%);
 }
 
+#burger:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
 .site-header.abierto #burger::before {
   transform: translateY(0) rotate(45deg);
 }
@@ -195,35 +211,37 @@ button {
 
 .site-menu {
   position: absolute;
-  top: calc(100% + 13px);
+  top: calc(100% + 10px);
   right: 0;
   display: grid;
-  width: min(260px, calc(100vw - 2 * var(--margin)));
+  width: min(230px, calc(100vw - 2 * var(--margin)));
   gap: 0;
-  padding: 14px 20px;
-  border: 1px solid rgb(17 17 17 / 16%);
+  padding: 16px 18px 12px;
+  border: 1px solid rgb(17 17 17 / 42%);
   border-radius: 0;
-  background: #fff;
-  box-shadow: 0 8px 26px rgb(17 17 17 / 12%);
+  background-color: var(--paper);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translateY(-8px);
-  transform-origin: top right;
   transition:
     opacity 180ms ease,
-    transform 180ms ease,
     visibility 0s linear 180ms;
+}
+
+#burger,
+.site-menu {
+  background-color: var(--paper);
+  background-image: var(--paper-background-image);
+  background-size: var(--paper-background-size);
+  background-attachment: fixed;
 }
 
 .site-menu.visible {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: translateY(0);
   transition:
     opacity 180ms ease,
-    transform 180ms ease,
     visibility 0s;
 }
 
@@ -233,10 +251,10 @@ button {
 
 .site-menu > a {
   display: block;
-  padding: 7px 0;
+  padding: 10px 0;
   color: #111;
   font-family: "Obviously Wide Bold", "Obviously Wide Medium", Arial, sans-serif;
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 800;
   letter-spacing: -.04em;
   line-height: 1.16;
@@ -254,9 +272,8 @@ button {
   display: flex;
   gap: 10px;
   align-items: center;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #111;
+  margin-top: 8px;
+  padding-top: 8px;
 }
 
 .site-menu .menu-socials a {
