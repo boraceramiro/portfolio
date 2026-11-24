@@ -425,7 +425,8 @@ button {
   transform: translate(
     min(calc(var(--paper-grid-step) * .1875), .04em),
     min(calc(var(--paper-grid-step) * .375), .08em)
-  ) scale(1.1);
+  ) scale(1.16);
+  transform-origin: center bottom;
 }
 
 .hero-notion-open {
