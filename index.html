@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ramiro Borace | Portfolio</title>
-    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=monogram23-v2">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=monogram23-v3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="preload" href="assets/models/ramiro.glb" as="fetch" crossorigin="anonymous">
     <script id="model-viewer-library" type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=index-paper-aligned-v84">
+    <link rel="stylesheet" href="style.css?v=index-paper-aligned-v85">
   </head>
   <body>
     <header id="bar" class="site-header">
@@ -60,7 +60,7 @@
             <div class="hero-kicker">
               <span>Ramiro Borace</span>
             </div>
-            <h1 class="hero-wordmark" aria-label="Portfolio">Portf<span class="hero-notion" aria-hidden="true"><img class="hero-notion-open" src="assets/hero/yo-notion-open.png" alt=""><img class="hero-notion-blink" src="assets/hero/yo-notion-blink.png" alt=""></span>lio</h1>
+            <h1 class="hero-wordmark" aria-label="Portfolio">Portf<span class="hero-notion" aria-hidden="true"><img class="hero-notion-open" src="assets/hero/yo-notion-open.png?v=notion-new-1" alt=""><img class="hero-notion-blink" src="assets/hero/yo-notion-blink.png?v=notion-new-1" alt=""></span>lio</h1>
           </div>
         </div>
       </section>
@@ -119,7 +119,7 @@
               <div class="project-info">
                 <p class="project-type">2026</p>
                 <h3>Junio con Títeres<span class="project-category">Cobertura</span></h3>
-                <p class="project-role">Cámara</p>
+                <p class="project-role">Operador de cámara y editor</p>
                 <span class="project-link muted">No disponible</span>
                 <span class="project-number">03 / 07</span>
               </div>
@@ -137,7 +137,7 @@
               <div class="project-info">
                 <p class="project-type">2026</p>
                 <h3>Jellt Blues<span class="project-category">Cobertura</span></h3>
-                <p class="project-role">Cámara</p>
+                <p class="project-role">Operador de cámara y editor</p>
                 <span class="project-link muted">No disponible</span>
                 <span class="project-number">04 / 07</span>
               </div>
@@ -199,13 +199,15 @@
                   disable-tap
                   interaction-prompt="none"
                   camera-orbit="0deg 90deg 4.2m"
+                  min-camera-orbit="auto 90deg auto"
+                  max-camera-orbit="auto 90deg auto"
                   camera-target="0m -0.05m 0m"
                   field-of-view="30deg"
                   shadow-intensity="0.8"
                   exposure="1.1"
                   auto-rotate
-                  auto-rotate-delay="0"
-                  rotation-per-second="-8deg">
+                  rotation-per-second="16deg"
+                  auto-rotate-delay="0">
                 </model-viewer>
                 <div class="model-flash" aria-hidden="true"></div>
               </div>
@@ -315,10 +317,17 @@
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const modelViewerScript = document.querySelector("#model-viewer-library");
       const modelViewer = document.querySelector("#about-model-viewer");
-      const modelSlot = document.querySelector("#about-model");
       const modelStatus = document.querySelector("#model-status");
       let modelReady = false;
-      let modelVisible = false;
+      let modelPointerActive = false;
+      let modelInertiaActive = false;
+      let modelInertiaFrame = 0;
+      let modelResumeTimer = 0;
+      let modelPointerId = null;
+      let modelPointerLastX = 0;
+      let modelPointerLastTime = 0;
+      let modelPointerDistance = 0;
+      let modelPointerVelocityX = 0;
 
       function showModelError(error) {
         modelStatus.textContent = "No se pudo cargar el modelo 3D.";
@@ -327,9 +336,97 @@
       }
 
       function updateModelRotation() {
-        const shouldRotate = modelVisible && !reduceMotion && document.visibilityState === "visible";
+        const shouldRotate = !reduceMotion && !modelPointerActive && !modelInertiaActive
+          && document.visibilityState === "visible";
         modelViewer.toggleAttribute("auto-rotate", shouldRotate);
       }
+
+      function stopModelInertia() {
+        window.cancelAnimationFrame(modelInertiaFrame);
+        window.clearTimeout(modelResumeTimer);
+        modelInertiaActive = false;
+      }
+
+      function resumeModelRotation(delay = 0) {
+        window.clearTimeout(modelResumeTimer);
+        modelResumeTimer = window.setTimeout(updateModelRotation, delay);
+      }
+
+      function startModelInertia(angularVelocity) {
+        const { theta, phi, radius } = modelViewer.getCameraOrbit();
+        let currentTheta = theta;
+        let velocity = Math.max(-5, Math.min(5, angularVelocity));
+        let previousTime = performance.now();
+        modelInertiaActive = true;
+        updateModelRotation();
+
+        function advanceModelInertia(now) {
+          const elapsed = Math.min(now - previousTime, 50);
+          previousTime = now;
+          currentTheta += velocity * elapsed / 1000;
+          velocity *= Math.exp(-elapsed / 180);
+          modelViewer.cameraOrbit = `${currentTheta}rad ${phi}rad ${radius}m`;
+          modelViewer.jumpCameraToGoal();
+
+          if (Math.abs(velocity) > 0.12) {
+            modelInertiaFrame = window.requestAnimationFrame(advanceModelInertia);
+          } else {
+            modelInertiaActive = false;
+            resumeModelRotation();
+          }
+        }
+
+        modelInertiaFrame = window.requestAnimationFrame(advanceModelInertia);
+      }
+
+      function onModelPointerDown(event) {
+        if (!event.isPrimary || (event.pointerType === "mouse" && event.button !== 0)) return;
+        stopModelInertia();
+        modelPointerActive = true;
+        modelPointerId = event.pointerId;
+        modelPointerLastX = event.clientX;
+        modelPointerLastTime = event.timeStamp;
+        modelPointerDistance = 0;
+        modelPointerVelocityX = 0;
+        updateModelRotation();
+      }
+
+      function onModelPointerMove(event) {
+        if (!modelPointerActive || event.pointerId !== modelPointerId) return;
+        const elapsed = event.timeStamp - modelPointerLastTime;
+        const deltaX = event.clientX - modelPointerLastX;
+        if (elapsed > 0) {
+          const velocityX = deltaX / elapsed;
+          modelPointerVelocityX = modelPointerVelocityX * 0.4 + velocityX * 0.6;
+        }
+        modelPointerDistance += Math.abs(deltaX);
+        modelPointerLastX = event.clientX;
+        modelPointerLastTime = event.timeStamp;
+      }
+
+      function onModelPointerUp(event) {
+        if (!modelPointerActive || event.pointerId !== modelPointerId) return;
+        modelPointerActive = false;
+        modelPointerId = null;
+
+        const timeSinceMove = event.timeStamp - modelPointerLastTime;
+        const recentVelocity = timeSinceMove > 100
+          ? 0
+          : modelPointerVelocityX * Math.max(0, 1 - timeSinceMove / 120);
+        const angularVelocity = -recentVelocity * Math.PI
+          / Math.max(modelViewer.clientWidth, 1) * 1000;
+
+        if (!reduceMotion && modelPointerDistance > 6 && Math.abs(angularVelocity) > 0.25) {
+          startModelInertia(angularVelocity);
+        } else {
+          resumeModelRotation();
+        }
+      }
+
+      modelViewer.addEventListener("pointerdown", onModelPointerDown);
+      modelViewer.addEventListener("pointermove", onModelPointerMove);
+      modelViewer.addEventListener("pointerup", onModelPointerUp);
+      modelViewer.addEventListener("pointercancel", onModelPointerUp);
 
       document.addEventListener("visibilitychange", updateModelRotation);
       modelViewerScript.addEventListener("error", () => {
@@ -343,24 +440,6 @@
       }
       modelViewer.addEventListener("load", onModelLoad);
       if (modelViewer.loaded) onModelLoad();
-
-      if ("IntersectionObserver" in window) {
-        const modelVisibilityObserver = new IntersectionObserver(([entry]) => {
-          modelVisible = entry.isIntersecting && entry.intersectionRatio >= 0.1;
-          updateModelRotation();
-        }, { threshold: [0, 0.1] });
-        modelVisibilityObserver.observe(modelSlot);
-      } else {
-        const updateModelVisibility = () => {
-          const bounds = modelSlot.getBoundingClientRect();
-          modelVisible = bounds.bottom > 0 && bounds.top < window.innerHeight
-            && bounds.right > 0 && bounds.left < window.innerWidth;
-          updateModelRotation();
-        };
-        window.addEventListener("scroll", updateModelVisibility, { passive: true });
-        window.addEventListener("resize", updateModelVisibility);
-        updateModelVisibility();
-      }
 
       const bar = document.querySelector("#bar");
       const burger = document.querySelector("#burger");
